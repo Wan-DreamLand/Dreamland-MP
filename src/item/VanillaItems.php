@@ -334,14 +334,17 @@ use function strtolower;
  * @method static WrittenBook WRITTEN_BOOK()
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
  */
-final class VanillaItems{
+final class VanillaItems
+{
 	use CloningRegistryTrait;
 
-	private function __construct(){
+	private function __construct()
+	{
 		//NOOP
 	}
 
-	protected static function register(string $name, Item $item) : void{
+	protected static function register(string $name, Item $item): void
+	{
 		self::_registryRegister($name, $item);
 	}
 
@@ -349,18 +352,23 @@ final class VanillaItems{
 	 * @return Item[]
 	 * @phpstan-return array<string, Item>
 	 */
-	public static function getAll() : array{
+	public static function getAll(): array
+	{
 		//phpstan doesn't support generic traits yet :(
 		/** @var Item[] $result */
 		$result = self::_registryGetAll();
 		return $result;
 	}
 
-	protected static function setup() : void{
+	protected static function setup(): void
+	{
 		self::registerArmorItems();
 		self::registerSpawnEggs();
 		self::registerTierToolItems();
 		self::registerSmithingTemplates();
+
+		// DreamLand-MP implemented items
+		self::register("breeze_rod", new Item(new IID(Ids::BREEZE_ROD), "Breeze Rod"));
 
 		self::register("air", Blocks::AIR()->asItem()->setCount(0));
 
@@ -500,11 +508,17 @@ final class VanillaItems{
 		self::register("nether_brick", new Item(new IID(Ids::NETHER_BRICK), "Nether Brick"));
 		self::register("nether_quartz", new Item(new IID(Ids::NETHER_QUARTZ), "Nether Quartz"));
 		self::register("nether_star", new Item(new IID(Ids::NETHER_STAR), "Nether Star"));
-		self::register("netherite_ingot", new class(new IID(Ids::NETHERITE_INGOT), "Netherite Ingot") extends Item{
-			public function isFireProof() : bool{ return true; }
+		self::register("netherite_ingot", new class(new IID(Ids::NETHERITE_INGOT), "Netherite Ingot") extends Item {
+			public function isFireProof(): bool
+			{
+				return true;
+			}
 		});
-		self::register("netherite_scrap", new class(new IID(Ids::NETHERITE_SCRAP), "Netherite Scrap") extends Item{
-			public function isFireProof() : bool{ return true; }
+		self::register("netherite_scrap", new class(new IID(Ids::NETHERITE_SCRAP), "Netherite Scrap") extends Item {
+			public function isFireProof(): bool
+			{
+				return true;
+			}
 		});
 		self::register("oak_sign", new ItemBlockWallOrFloor(new IID(Ids::OAK_SIGN), Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
 		self::register("painting", new PaintingItem(new IID(Ids::PAINTING), "Painting"));
@@ -574,9 +588,9 @@ final class VanillaItems{
 		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
 		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
 
-		foreach(BoatType::cases() as $type){
+		foreach (BoatType::cases() as $type) {
 			//boat type is static, because different types of wood may have different properties
-			self::register(strtolower($type->name) . "_boat", new Boat(new IID(match($type){
+			self::register(strtolower($type->name) . "_boat", new Boat(new IID(match ($type) {
 				BoatType::OAK => Ids::OAK_BOAT,
 				BoatType::SPRUCE => Ids::SPRUCE_BOAT,
 				BoatType::BIRCH => Ids::BIRCH_BOAT,
@@ -588,25 +602,30 @@ final class VanillaItems{
 		}
 	}
 
-	private static function registerSpawnEggs() : void{
-		self::register("zombie_spawn_egg", new class(new IID(Ids::ZOMBIE_SPAWN_EGG), "Zombie Spawn Egg") extends SpawnEgg{
-			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+	private static function registerSpawnEggs(): void
+	{
+		self::register("zombie_spawn_egg", new class(new IID(Ids::ZOMBIE_SPAWN_EGG), "Zombie Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
 				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		self::register("squid_spawn_egg", new class(new IID(Ids::SQUID_SPAWN_EGG), "Squid Spawn Egg") extends SpawnEgg{
-			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+		self::register("squid_spawn_egg", new class(new IID(Ids::SQUID_SPAWN_EGG), "Squid Spawn Egg") extends SpawnEgg {
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		self::register("villager_spawn_egg", new class(new IID(Ids::VILLAGER_SPAWN_EGG), "Villager Spawn Egg") extends SpawnEgg{
-			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+		self::register("villager_spawn_egg", new class(new IID(Ids::VILLAGER_SPAWN_EGG), "Villager Spawn Egg") extends SpawnEgg {
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
 				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 	}
 
-	private static function registerTierToolItems() : void{
+	private static function registerTierToolItems(): void
+	{
 		self::register("diamond_axe", new Axe(new IID(Ids::DIAMOND_AXE), "Diamond Axe", ToolTier::DIAMOND, [EnchantmentTags::AXE]));
 		self::register("golden_axe", new Axe(new IID(Ids::GOLDEN_AXE), "Golden Axe", ToolTier::GOLD, [EnchantmentTags::AXE]));
 		self::register("iron_axe", new Axe(new IID(Ids::IRON_AXE), "Iron Axe", ToolTier::IRON, [EnchantmentTags::AXE]));
@@ -639,7 +658,8 @@ final class VanillaItems{
 		self::register("wooden_sword", new Sword(new IID(Ids::WOODEN_SWORD), "Wooden Sword", ToolTier::WOOD, [EnchantmentTags::SWORD]));
 	}
 
-	private static function registerArmorItems() : void{
+	private static function registerArmorItems(): void
+	{
 		self::register("chainmail_boots", new Armor(new IID(Ids::CHAINMAIL_BOOTS), "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::BOOTS]));
 		self::register("diamond_boots", new Armor(new IID(Ids::DIAMOND_BOOTS), "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::BOOTS]));
 		self::register("golden_boots", new Armor(new IID(Ids::GOLDEN_BOOTS), "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET, material: ArmorMaterials::GOLD()), [EnchantmentTags::BOOTS]));
@@ -670,7 +690,8 @@ final class VanillaItems{
 		self::register("netherite_leggings", new Armor(new IID(Ids::NETHERITE_LEGGINGS), "Netherite Leggings", new ArmorTypeInfo(6, 556, ArmorInventory::SLOT_LEGS, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::LEGGINGS]));
 	}
 
-	private static function registerSmithingTemplates() : void{
+	private static function registerSmithingTemplates(): void
+	{
 		self::register("netherite_upgrade_smithing_template", new Item(new IID(Ids::NETHERITE_UPGRADE_SMITHING_TEMPLATE), "Netherite Upgrade Smithing Template"));
 		self::register("coast_armor_trim_smithing_template", new Item(new IID(Ids::COAST_ARMOR_TRIM_SMITHING_TEMPLATE), "Coast Armor Trim Smithing Template"));
 		self::register("dune_armor_trim_smithing_template", new Item(new IID(Ids::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE), "Dune Armor Trim Smithing Template"));
@@ -689,5 +710,4 @@ final class VanillaItems{
 		self::register("wayfinder_armor_trim_smithing_template", new Item(new IID(Ids::WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE), "Wayfinder Armor Trim Smithing Template"));
 		self::register("wild_armor_trim_smithing_template", new Item(new IID(Ids::WILD_ARMOR_TRIM_SMITHING_TEMPLATE), "Wild Armor Trim Smithing Template"));
 	}
-
 }
